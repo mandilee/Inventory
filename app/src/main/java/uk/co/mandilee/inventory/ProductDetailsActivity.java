@@ -37,7 +37,7 @@ public class ProductDetailsActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
     private static final int EXISTING_PRODUCT_LOADER = 0;
 
-    Uri imageUri;
+    private Uri imageUri;
 
     private EditText mNameEditText,
             mPartNoEditText,
@@ -58,7 +58,7 @@ public class ProductDetailsActivity extends AppCompatActivity implements
 
     private boolean mProductEdited = false;
 
-    private View.OnTouchListener mOnTouchListener = new View.OnTouchListener() {
+    private final View.OnTouchListener mOnTouchListener = new View.OnTouchListener() {
         @Override
         public boolean onTouch(View v, MotionEvent event) {
             mProductEdited = true;
@@ -154,7 +154,7 @@ public class ProductDetailsActivity extends AppCompatActivity implements
         mOrderStockButton.setVisibility(View.VISIBLE);
     }
 
-    public void checkPermissions() {
+    private void checkPermissions() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
@@ -252,7 +252,7 @@ public class ProductDetailsActivity extends AppCompatActivity implements
         return super.onOptionsItemSelected(item);
     }
 
-    public void orderMore() {
+    private void orderMore() {
         String mailBody = "We need a new order of " + mNameEditText.getText().toString().trim()
                 + "\nPart No: " + mPartNoEditText.getText().toString().trim();
         Intent i = new Intent(Intent.ACTION_SENDTO);
@@ -421,12 +421,12 @@ public class ProductDetailsActivity extends AppCompatActivity implements
         }
     }
 
-    public void stockUpOne() {
+    private void stockUpOne() {
         ++mCurrentStock;
         updateStockDisplay();
     }
 
-    public void stockDownOne() {
+    private void stockDownOne() {
         if (mCurrentStock < 1) {
             showToast(R.string.cant_lower_stock);
         } else {
@@ -435,7 +435,7 @@ public class ProductDetailsActivity extends AppCompatActivity implements
         }
     }
 
-    public void updateStockDisplay() {
+    private void updateStockDisplay() {
         mStockEditText.setText(String.valueOf(mCurrentStock));
     }
 

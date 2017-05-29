@@ -6,19 +6,15 @@ import android.support.v7.widget.RecyclerView;
 
 import uk.co.mandilee.inventory.Contract.ProductEntry;
 
-public abstract class CursorRecyclerAdapter<VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<VH> {
+abstract class CursorRecyclerAdapter<VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<VH> {
 
+    private final ProductListActivity mActivityContext;
+    private final DataSetObserver mDataSetObserver;
     private Cursor mCursor;
-
-    private ProductListActivity mActivityContext;
-
     private boolean isDataValid;
-
     private int mRowColumnId;
 
-    private DataSetObserver mDataSetObserver;
-
-    public CursorRecyclerAdapter(ProductListActivity context, Cursor c) {
+    CursorRecyclerAdapter(ProductListActivity context, Cursor c) {
         mActivityContext = context;
         mCursor = c;
         isDataValid = mCursor != null;
@@ -27,10 +23,6 @@ public abstract class CursorRecyclerAdapter<VH extends RecyclerView.ViewHolder> 
         if (mCursor != null) {
             mCursor.registerDataSetObserver(mDataSetObserver);
         }
-    }
-
-    public Cursor getCursor() {
-        return mCursor;
     }
 
     @Override
@@ -49,7 +41,7 @@ public abstract class CursorRecyclerAdapter<VH extends RecyclerView.ViewHolder> 
         return 0;
     }
 
-    public abstract void onBindViewHolder(VH viewHolder, Cursor cursor);
+    protected abstract void onBindViewHolder(VH viewHolder, Cursor cursor);
 
     @Override
     public void onBindViewHolder(VH holder, int position) {
@@ -60,13 +52,6 @@ public abstract class CursorRecyclerAdapter<VH extends RecyclerView.ViewHolder> 
             throw new IllegalStateException(mActivityContext.getString(R.string.invalid_cursor));
         }
         onBindViewHolder(holder, mCursor);
-    }
-
-    public void changeCursor(Cursor mCursor) {
-        Cursor old = swapCursor(mCursor);
-        if (old != null) {
-            old.close();
-        }
     }
 
     public Cursor swapCursor(Cursor newCursor) {

@@ -4,13 +4,11 @@ import android.content.ContentResolver;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
-public class Contract {
+class Contract {
 
     public static final String CONTENT_AUTHORITY = "uk.co.mandilee.inventory";
-
-    public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
     public static final String PATH_PRODUCTS = "products";
-
+    private static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
 
     public static abstract class ProductEntry implements BaseColumns {
         public static final String PRODUCT_TABLE_NAME = "products";

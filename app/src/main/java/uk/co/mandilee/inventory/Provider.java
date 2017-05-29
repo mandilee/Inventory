@@ -3,10 +3,12 @@ package uk.co.mandilee.inventory;
 import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 
 import uk.co.mandilee.inventory.Contract.ProductEntry;
 
@@ -20,16 +22,18 @@ public class Provider extends ContentProvider {
         sUriMatcher.addURI(Contract.CONTENT_AUTHORITY, Contract.PATH_PRODUCTS, PRODUCTS);
     }
 
+    private Context mContext;
     private DbHelper mDbHelper;
 
     @Override
     public boolean onCreate() {
+        mContext = getContext();
         mDbHelper = new DbHelper(getContext());
         return true;
     }
 
     @Override
-    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+    public Cursor query(@NonNull Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         SQLiteDatabase database = mDbHelper.getReadableDatabase();
 
         Cursor cursor;
@@ -50,16 +54,16 @@ public class Provider extends ContentProvider {
                 break;
 
             default:
-                throw new IllegalArgumentException(getContext().getString(R.string.error_unknown_uri, uri));
+                throw new IllegalArgumentException(mContext.getString(R.string.error_unknown_uri, uri));
         }
 
-        cursor.setNotificationUri(getContext().getContentResolver(), uri);
+        cursor.setNotificationUri(mContext.getContentResolver(), uri);
 
         return cursor;
     }
 
     @Override
-    public String getType(Uri uri) {
+    public String getType(@NonNull Uri uri) {
         final int match = sUriMatcher.match(uri);
 
         switch (match) {
@@ -70,12 +74,12 @@ public class Provider extends ContentProvider {
                 return ProductEntry.CONTENT_LIST_TYPE;
 
             default:
-                throw new IllegalStateException(getContext().getString(R.string.unknown_uri_match, uri, match));
+                throw new IllegalStateException(mContext.getString(R.string.unknown_uri_match, uri, match));
         }
     }
 
     @Override
-    public Uri insert(Uri uri, ContentValues contentValues) {
+    public Uri insert(@NonNull Uri uri, ContentValues contentValues) {
         final int match = sUriMatcher.match(uri);
 
         switch (match) {
@@ -83,7 +87,7 @@ public class Provider extends ContentProvider {
                 return insertProduct(uri, contentValues);
 
             default:
-                throw new IllegalArgumentException(getContext().getString(R.string.insertion_not_supported, uri));
+                throw new IllegalArgumentException(mContext.getString(R.string.insertion_not_supported, uri));
         }
     }
 
@@ -91,27 +95,27 @@ public class Provider extends ContentProvider {
         switch (column) {
             case ProductEntry.COLUMN_PRODUCT_NAME:
                 if (values.getAsString(column) == null)
-                    throw new IllegalArgumentException(getContext().getString(R.string.required_product_name));
+                    throw new IllegalArgumentException(mContext.getString(R.string.required_product_name));
 
             case ProductEntry.COLUMN_PRODUCT_PART_NO:
                 if (values.getAsString(column) == null)
-                    throw new IllegalArgumentException(getContext().getString(R.string.required_product_part_no));
+                    throw new IllegalArgumentException(mContext.getString(R.string.required_product_part_no));
 
             case ProductEntry.COLUMN_PRODUCT_PRICE:
                 if (values.getAsString(column) == null)
-                    throw new IllegalArgumentException(getContext().getString(R.string.required_product_price));
+                    throw new IllegalArgumentException(mContext.getString(R.string.required_product_price));
 
             case ProductEntry.COLUMN_PRODUCT_STOCK:
                 if (values.getAsString(column) == null)
-                    throw new IllegalArgumentException(getContext().getString(R.string.required_product_stock));
+                    throw new IllegalArgumentException(mContext.getString(R.string.required_product_stock));
 
             case ProductEntry.COLUMN_PRODUCT_DESCRIPTION:
                 if (values.getAsString(column) == null)
-                    throw new IllegalArgumentException(getContext().getString(R.string.required_product_description));
+                    throw new IllegalArgumentException(mContext.getString(R.string.required_product_description));
 
             case ProductEntry.COLUMN_PRODUCT_PICTURE:
                 if (values.getAsString(column) == null)
-                    throw new IllegalArgumentException(getContext().getString(R.string.required_product_image));
+                    throw new IllegalArgumentException(mContext.getString(R.string.required_product_image));
         }
 
         return true;
@@ -127,12 +131,12 @@ public class Provider extends ContentProvider {
 
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
         long id = database.insert(ProductEntry.PRODUCT_TABLE_NAME, null, values);
-        getContext().getContentResolver().notifyChange(uri, null);
+        mContext.getContentResolver().notifyChange(uri, null);
         return ContentUris.withAppendedId(uri, id);
     }
 
     @Override
-    public int delete(Uri uri, String selection, String[] selectionArgs) {
+    public int delete(@NonNull Uri uri, String selection, String[] selectionArgs) {
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
         int rowsDeleted;
 
@@ -150,18 +154,18 @@ public class Provider extends ContentProvider {
                 break;
 
             default:
-                throw new IllegalArgumentException(getContext().getString(R.string.deletion_not_supported, uri));
+                throw new IllegalArgumentException(mContext.getString(R.string.deletion_not_supported, uri));
         }
 
         if (rowsDeleted != 0) {
-            getContext().getContentResolver().notifyChange(uri, null);
+            mContext.getContentResolver().notifyChange(uri, null);
         }
 
         return rowsDeleted;
     }
 
     @Override
-    public int update(Uri uri, ContentValues contentValues, String selection, String[] selectionArgs) {
+    public int update(@NonNull Uri uri, ContentValues contentValues, String selection, String[] selectionArgs) {
         final int match = sUriMatcher.match(uri);
 
         switch (match) {
@@ -174,7 +178,7 @@ public class Provider extends ContentProvider {
                 return updateProduct(uri, contentValues, selection, selectionArgs);
 
             default:
-                throw new IllegalArgumentException(getContext().getString(R.string.update_not_supported, uri));
+                throw new IllegalArgumentException(mContext.getString(R.string.update_not_supported, uri));
         }
     }
 
@@ -212,7 +216,7 @@ public class Provider extends ContentProvider {
         int rowsUpdated = database.update(ProductEntry.PRODUCT_TABLE_NAME, values, selection, selectionArgs);
 
         if (rowsUpdated != 0) {
-            getContext().getContentResolver().notifyChange(uri, null);
+            mContext.getContentResolver().notifyChange(uri, null);
         }
 
         return rowsUpdated;

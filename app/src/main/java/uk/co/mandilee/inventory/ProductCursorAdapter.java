@@ -81,12 +81,12 @@ public class ProductCursorAdapter extends CursorRecyclerAdapter<ProductCursorAda
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        protected TextView nameTextView,
-                priceTextView,
-                stockTextView;
-        protected ImageView sold,
-                productPicture;
-        protected ConstraintLayout wholeLayout;
+        final TextView nameTextView;
+        final TextView priceTextView;
+        final TextView stockTextView;
+        final ImageView sold;
+        final ImageView productPicture;
+        final ConstraintLayout wholeLayout;
 
         public ViewHolder(View itemView) {
             super(itemView);

@@ -22,9 +22,9 @@ public class ProductListActivity extends AppCompatActivity implements
 
     private static final int PRODUCT_LOADER = 1;
 
-    ProductCursorAdapter mCursorAdapter;
+    private ProductCursorAdapter mCursorAdapter;
 
-    View emptyView;
+    private View emptyView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
