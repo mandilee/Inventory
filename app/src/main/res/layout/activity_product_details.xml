@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ProductDetailsActivity">
+
+    <ImageView
+        android:id="@+id/product_picture"
+        android:layout_width="@dimen/image_size"
+        android:layout_height="@dimen/image_size"
+        android:layout_margin="@dimen/eight_dp"
+        android:contentDescription="@string/product_image"
+        android:scaleType="fitCenter"
+        android:src="@drawable/no_image"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/eight_dp"
+        android:text="@string/click_to_add_image"
+        android:textAlignment="center"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintLeft_toLeftOf="@+id/product_picture"
+        app:layout_constraintRight_toRightOf="@+id/product_picture"
+        app:layout_constraintTop_toBottomOf="@+id/product_picture"/>
+
+    <EditText
+        android:id="@+id/edit_product_name"
+        android:layout_width="@dimen/zero_dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/eight_dp"
+        android:hint="@string/hint_product_name"
+        android:inputType="textCapWords"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/product_picture"
+        app:layout_constraintTop_toTopOf="parent"/>N
+
+    <TextView
+        android:id="@+id/currency_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/eight_dp"
+        android:text="@string/currency"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        app:layout_constraintBottom_toBottomOf="@+id/edit_product_price"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/edit_product_price"
+        app:layout_constraintVertical_bias="0.2"/>N
+
+    <EditText
+        android:id="@+id/edit_product_price"
+        android:layout_width="@dimen/zero_dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/eight_dp"
+        android:hint="@string/hint_product_price"
+        android:inputType="numberDecimal"
+        app:layout_constraintLeft_toRightOf="@+id/currency_text_view"
+        app:layout_constraintRight_toRightOf="@+id/edit_product_part_no"
+        app:layout_constraintTop_toBottomOf="@+id/edit_product_part_no"/>N
+
+    <EditText
+        android:id="@+id/edit_product_stock"
+        android:layout_width="@dimen/zero_dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/zero_dp"
+        android:hint="@string/hint_product_stock"
+        android:inputType="number"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView"/>N
+
+    <EditText
+        android:id="@+id/edit_product_description"
+        android:layout_width="@dimen/zero_dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/eight_dp"
+        android:gravity="top"
+        android:hint="@string/hint_product_description"
+        android:inputType="text"
+        android:lines="3"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/edit_product_stock"/>N
+
+    <EditText
+        android:id="@+id/edit_product_part_no"
+        android:layout_width="@dimen/zero_dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/eight_dp"
+        android:hint="@string/hint_part_no"
+        android:inputType="textCapCharacters"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/product_picture"
+        app:layout_constraintTop_toBottomOf="@id/edit_product_name"/>N
+
+    <ImageButton
+        android:id="@+id/remove_stock_button"
+        android:layout_width="@dimen/zero_dp"
+        android:layout_height="@dimen/button_size"
+        android:layout_margin="@dimen/eight_dp"
+        android:background="@color/colorAccent"
+        android:contentDescription="@string/decrement_stock"
+        android:src="@drawable/minus_one"
+        app:layout_constraintBottom_toTopOf="@+id/order_stock_button"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintLeft_toLeftOf="@+id/order_stock_button"
+        app:layout_constraintRight_toLeftOf="@+id/adjust_stock"/>N
+
+    <TextView
+        android:id="@+id/adjust_stock"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/eight_dp"
+        android:gravity="center"
+        android:text="@string/adjust_stock"
+        android:textAlignment="center"
+        android:textSize="@dimen/edit_text_size"
+        app:layout_constraintBottom_toBottomOf="@+id/add_stock_button"
+        app:layout_constraintLeft_toRightOf="@+id/remove_stock_button"
+        app:layout_constraintRight_toLeftOf="@+id/add_stock_button"
+        app:layout_constraintTop_toTopOf="@+id/add_stock_button"/>N
+
+    <ImageButton
+        android:id="@+id/add_stock_button"
+        android:layout_width="@dimen/zero_dp"
+        android:layout_height="@dimen/button_size"
+        android:layout_margin="@dimen/eight_dp"
+        android:background="@color/colorAccent"
+        android:contentDescription="@string/increment_stock"
+        android:src="@drawable/plus_one"
+        app:layout_constraintBottom_toTopOf="@+id/order_stock_button"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintLeft_toRightOf="@+id/adjust_stock"
+        app:layout_constraintRight_toRightOf="@+id/order_stock_button"/>N
+
+    <Button
+        android:id="@+id/order_stock_button"
+        android:layout_width="@dimen/zero_dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/eight_dp"
+        android:text="@string/order_stock"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"/>
+</android.support.constraint.ConstraintLayout>
