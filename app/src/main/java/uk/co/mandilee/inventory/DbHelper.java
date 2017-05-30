@@ -16,6 +16,9 @@ class DbHelper extends SQLiteOpenHelper {
         super(context, DB_NAME, null, DB_VERSION);
     }
 
+    /**
+     * create the required table
+     */
     @Override
     public void onCreate(SQLiteDatabase db) {
         String CREATE_TABLE_SQL = "CREATE TABLE " + ProductEntry.PRODUCT_TABLE_NAME + "("
@@ -30,6 +33,10 @@ class DbHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_SQL);
     }
 
+    /**
+     * if upgrading, just dump the old table for now
+     * for real use, would need to ALTER the table instead in order to keep existing data
+     */
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE " + ProductEntry.PRODUCT_TABLE_NAME);

@@ -13,18 +13,27 @@ import android.support.annotation.NonNull;
 import uk.co.mandilee.inventory.Contract.ProductEntry;
 
 public class Provider extends ContentProvider {
-    private static final int PRODUCT_ID = 101;
-    private static final int PRODUCTS = 100;
-    private static final UriMatcher sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
+    // keep these unique
+    private static final int PRODUCTS = 100;
+    private static final int PRODUCT_ID = 101;
+
+    // required URI stuffs
+    private static final UriMatcher sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
     static {
         sUriMatcher.addURI(Contract.CONTENT_AUTHORITY, Contract.PATH_PRODUCTS + "/#", PRODUCT_ID);
         sUriMatcher.addURI(Contract.CONTENT_AUTHORITY, Contract.PATH_PRODUCTS, PRODUCTS);
     }
 
+    // context for easier finding later
     private Context mContext;
+
+    // db helper for lots of things
     private DbHelper mDbHelper;
 
+    /**
+     * populate mContext and mDbHelper during onCreate
+     */
     @Override
     public boolean onCreate() {
         mContext = getContext();
@@ -32,8 +41,14 @@ public class Provider extends ContentProvider {
         return true;
     }
 
+    /**
+     * get a readable database to query the table and return the resulting cursor
+     * query changes based on whether a product id is provided or not
+     * throws IllegalArgumentException if neither products or productid uri is valid
+     */
     @Override
     public Cursor query(@NonNull Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+
         SQLiteDatabase database = mDbHelper.getReadableDatabase();
 
         Cursor cursor;
@@ -62,6 +77,10 @@ public class Provider extends ContentProvider {
         return cursor;
     }
 
+    /**
+     * get the type of uri it's using
+     * throws IllegalArgumentException if neither products or productid uri is valid
+     */
     @Override
     public String getType(@NonNull Uri uri) {
         final int match = sUriMatcher.match(uri);
@@ -78,6 +97,10 @@ public class Provider extends ContentProvider {
         }
     }
 
+    /**
+     * get the type of uri it's using
+     * throws IllegalArgumentException if neither products or productid uri is valid
+     */
     @Override
     public Uri insert(@NonNull Uri uri, ContentValues contentValues) {
         final int match = sUriMatcher.match(uri);
@@ -91,42 +114,42 @@ public class Provider extends ContentProvider {
         }
     }
 
-    private boolean checkValue(String column, ContentValues values) {
+    /**
+     * checks the content value of the specified column
+     * throws IllegalArgumentException if neither it's null
+     */
+    private void checkValue(String column, ContentValues values) {
         switch (column) {
             case ProductEntry.COLUMN_PRODUCT_NAME:
-                if (values.getAsString(column) == null)
+                if (values.getAsString(column).equals(null))
                     throw new IllegalArgumentException(mContext.getString(R.string.required_product_name));
 
             case ProductEntry.COLUMN_PRODUCT_PART_NO:
-                if (values.getAsString(column) == null)
+                if (values.getAsString(column).equals(null))
                     throw new IllegalArgumentException(mContext.getString(R.string.required_product_part_no));
 
             case ProductEntry.COLUMN_PRODUCT_PRICE:
-                if (values.getAsString(column) == null)
+                if (values.getAsString(column).equals(null))
                     throw new IllegalArgumentException(mContext.getString(R.string.required_product_price));
 
             case ProductEntry.COLUMN_PRODUCT_STOCK:
-                if (values.getAsString(column) == null)
+                if (values.getAsString(column).equals(null))
                     throw new IllegalArgumentException(mContext.getString(R.string.required_product_stock));
 
-            case ProductEntry.COLUMN_PRODUCT_DESCRIPTION:
-                if (values.getAsString(column) == null)
-                    throw new IllegalArgumentException(mContext.getString(R.string.required_product_description));
-
             case ProductEntry.COLUMN_PRODUCT_PICTURE:
-                if (values.getAsString(column) == null)
+                if (values.getAsString(column).equals(null))
                     throw new IllegalArgumentException(mContext.getString(R.string.required_product_image));
         }
-
-        return true;
     }
 
+    /**
+     * add the new product to the database after checking no values are null
+     */
     private Uri insertProduct(Uri uri, ContentValues values) {
         checkValue(ProductEntry.COLUMN_PRODUCT_NAME, values);
         checkValue(ProductEntry.COLUMN_PRODUCT_PART_NO, values);
         checkValue(ProductEntry.COLUMN_PRODUCT_PRICE, values);
         checkValue(ProductEntry.COLUMN_PRODUCT_STOCK, values);
-        checkValue(ProductEntry.COLUMN_PRODUCT_DESCRIPTION, values);
         checkValue(ProductEntry.COLUMN_PRODUCT_PICTURE, values);
 
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
@@ -135,6 +158,10 @@ public class Provider extends ContentProvider {
         return ContentUris.withAppendedId(uri, id);
     }
 
+    /**
+     * delete selected product (or all products) from database
+     * throws IllegalArgumentException if uri is invalid
+     */
     @Override
     public int delete(@NonNull Uri uri, String selection, String[] selectionArgs) {
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
@@ -164,6 +191,10 @@ public class Provider extends ContentProvider {
         return rowsDeleted;
     }
 
+    /**
+     * update selected product (or all products)
+     * throws IllegalArgumentException if uri is invalid
+     */
     @Override
     public int update(@NonNull Uri uri, ContentValues contentValues, String selection, String[] selectionArgs) {
         final int match = sUriMatcher.match(uri);
@@ -182,42 +213,33 @@ public class Provider extends ContentProvider {
         }
     }
 
+    /**
+     * update selected product after checking any changed values are not null
+     */
     private int updateProduct(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        boolean isValid = true;
-        if (values.containsKey(ProductEntry.COLUMN_PRODUCT_NAME)) {
-            isValid = checkValue(ProductEntry.COLUMN_PRODUCT_NAME, values);
-        }
+        if (values.containsKey(ProductEntry.COLUMN_PRODUCT_NAME))
+            checkValue(ProductEntry.COLUMN_PRODUCT_NAME, values);
 
-        if (values.containsKey(ProductEntry.COLUMN_PRODUCT_PART_NO)) {
-            isValid = checkValue(ProductEntry.COLUMN_PRODUCT_PART_NO, values);
-        }
+        if (values.containsKey(ProductEntry.COLUMN_PRODUCT_PART_NO))
+            checkValue(ProductEntry.COLUMN_PRODUCT_PART_NO, values);
 
-        if (values.containsKey(ProductEntry.COLUMN_PRODUCT_PRICE)) {
-            isValid = checkValue(ProductEntry.COLUMN_PRODUCT_PRICE, values);
-        }
+        if (values.containsKey(ProductEntry.COLUMN_PRODUCT_PRICE))
+            checkValue(ProductEntry.COLUMN_PRODUCT_PRICE, values);
 
-        if (values.containsKey(ProductEntry.COLUMN_PRODUCT_STOCK)) {
-            isValid = checkValue(ProductEntry.COLUMN_PRODUCT_STOCK, values);
-        }
+        if (values.containsKey(ProductEntry.COLUMN_PRODUCT_STOCK))
+            checkValue(ProductEntry.COLUMN_PRODUCT_STOCK, values);
 
-        if (values.containsKey(ProductEntry.COLUMN_PRODUCT_DESCRIPTION)) {
-            isValid = checkValue(ProductEntry.COLUMN_PRODUCT_DESCRIPTION, values);
-        }
+        if (values.containsKey(ProductEntry.COLUMN_PRODUCT_PICTURE))
+            checkValue(ProductEntry.COLUMN_PRODUCT_PICTURE, values);
 
-        if (values.containsKey(ProductEntry.COLUMN_PRODUCT_PICTURE)) {
-            isValid = checkValue(ProductEntry.COLUMN_PRODUCT_PICTURE, values);
-        }
-
-        if (values.size() == 0 || !isValid) {
+        if (values.size() == 0)
             return 0;
-        }
 
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
         int rowsUpdated = database.update(ProductEntry.PRODUCT_TABLE_NAME, values, selection, selectionArgs);
 
-        if (rowsUpdated != 0) {
+        if (rowsUpdated != 0)
             mContext.getContentResolver().notifyChange(uri, null);
-        }
 
         return rowsUpdated;
     }

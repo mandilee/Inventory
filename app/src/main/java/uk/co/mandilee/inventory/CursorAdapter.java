@@ -6,7 +6,8 @@ import android.support.v7.widget.RecyclerView;
 
 import uk.co.mandilee.inventory.Contract.ProductEntry;
 
-abstract class CursorRecyclerAdapter<VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<VH> {
+abstract class CursorAdapter<VH extends RecyclerView.ViewHolder>
+        extends RecyclerView.Adapter<VH> {
 
     private final ProductListActivity mActivityContext;
     private final DataSetObserver mDataSetObserver;
@@ -14,33 +15,51 @@ abstract class CursorRecyclerAdapter<VH extends RecyclerView.ViewHolder> extends
     private boolean isDataValid;
     private int mRowColumnId;
 
-    CursorRecyclerAdapter(ProductListActivity context, Cursor c) {
+    CursorAdapter(ProductListActivity context, Cursor c) {
+        // set context, mainly for getString()
         mActivityContext = context;
+
+        // set cursor
         mCursor = c;
+
+        // check & set if data is valid
         isDataValid = mCursor != null;
+
+        // set current row id if data is valid
         mRowColumnId = isDataValid ? mCursor.getColumnIndex(ProductEntry._ID) : -1;
+
+        // set data observer to notify when data changes
         mDataSetObserver = new NotifyingDataSetObserver();
+
+        // if cursor isn't null, register the data observer
         if (mCursor != null) {
             mCursor.registerDataSetObserver(mDataSetObserver);
         }
     }
 
+    /**
+     * get the number of items
+     */
     @Override
     public int getItemCount() {
-        if (isDataValid && mCursor != null) {
-            return mCursor.getCount();
-        }
-        return 0;
+        return (isDataValid && mCursor != null)
+                ? mCursor.getCount()
+                : 0;
     }
 
+    /**
+     * get the current item id
+     */
     @Override
     public long getItemId(int position) {
-        if (isDataValid && mCursor != null && mCursor.moveToPosition(position)) {
-            return mCursor.getLong(mRowColumnId);
-        }
-        return 0;
+        return (isDataValid && mCursor != null && mCursor.moveToPosition(position))
+                ? mCursor.getLong(mRowColumnId)
+                : 0;
     }
 
+    /**
+     * set up binding view holder for recycling the views as scroll is performed
+     */
     protected abstract void onBindViewHolder(VH viewHolder, Cursor cursor);
 
     @Override
@@ -54,8 +73,11 @@ abstract class CursorRecyclerAdapter<VH extends RecyclerView.ViewHolder> extends
         onBindViewHolder(holder, mCursor);
     }
 
-    public Cursor swapCursor(Cursor newCursor) {
-        if (newCursor == mCursor) {
+    /**
+     * replace cursor in use with cursor provided, assuming it's valid and different to existing
+     */
+    public Cursor switchCursor(Cursor newCursor) {
+        if (mCursor == newCursor) {
             return null;
         }
 
@@ -83,6 +105,9 @@ abstract class CursorRecyclerAdapter<VH extends RecyclerView.ViewHolder> extends
         return existingCursor;
     }
 
+    /**
+     * quick class to notify data observer as changed
+     */
     private class NotifyingDataSetObserver extends DataSetObserver {
         @Override
         public void onChanged() {

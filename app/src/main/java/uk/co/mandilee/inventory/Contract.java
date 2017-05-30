@@ -7,12 +7,17 @@ import android.provider.BaseColumns;
 class Contract {
 
     public static final String CONTENT_AUTHORITY = "uk.co.mandilee.inventory";
+
     public static final String PATH_PRODUCTS = "products";
+
     private static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
 
     public static abstract class ProductEntry implements BaseColumns {
+
+        // the table name
         public static final String PRODUCT_TABLE_NAME = "products";
 
+        // the content uri
         public static final Uri PRODUCT_CONTENT_URI = Uri.withAppendedPath(BASE_CONTENT_URI, PATH_PRODUCTS);
 
         // the columns

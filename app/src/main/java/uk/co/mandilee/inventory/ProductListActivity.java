@@ -75,7 +75,8 @@ public class ProductListActivity extends AppCompatActivity implements
                 ProductEntry.COLUMN_PRODUCT_PRICE,
                 ProductEntry.COLUMN_PRODUCT_STOCK,
                 ProductEntry.COLUMN_PRODUCT_DESCRIPTION,
-                ProductEntry.COLUMN_PRODUCT_PICTURE};
+                ProductEntry.COLUMN_PRODUCT_PICTURE
+        };
 
         return new CursorLoader(this,
                 ProductEntry.PRODUCT_CONTENT_URI,
@@ -92,11 +93,11 @@ public class ProductListActivity extends AppCompatActivity implements
         } else {
             emptyView.setVisibility(View.GONE);
         }
-        mCursorAdapter.swapCursor(data);
+        mCursorAdapter.switchCursor(data);
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        mCursorAdapter.swapCursor(null);
+        mCursorAdapter.switchCursor(null);
     }
 }

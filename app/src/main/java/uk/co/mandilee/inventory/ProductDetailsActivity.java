@@ -54,7 +54,7 @@ public class ProductDetailsActivity extends AppCompatActivity implements
 
     private int mCurrentStock;
 
-    private Uri mCurrentProductUri;
+    private Uri mCurrentProduct;
 
     private boolean mProductEdited = false;
 
@@ -69,15 +69,20 @@ public class ProductDetailsActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_product_details);
+
         Intent intent = getIntent();
-        mCurrentProductUri = intent.getData();
+        mCurrentProduct = intent.getData();
+
         initializeVariables();
-        if (mCurrentProductUri == null) {
+
+        if (mCurrentProduct == null) {
             newProductSetup();
         } else {
             existingProductSetup();
         }
+
         setupListeners();
     }
 
@@ -109,7 +114,7 @@ public class ProductDetailsActivity extends AppCompatActivity implements
         });
         mAddStockButton.setOnTouchListener(mOnTouchListener);
         mRemoveStockButton.setOnTouchListener(mOnTouchListener);
-        if (mCurrentProductUri != null) {
+        if (mCurrentProduct != null) {
             mOrderStockButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -193,15 +198,16 @@ public class ProductDetailsActivity extends AppCompatActivity implements
     private void dialogUnsavedChanges(
             DialogInterface.OnClickListener discardButtonClickListener) {
         AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-        dialog.setMessage(R.string.dialog_unsaved_changes);
-        dialog.setPositiveButton(R.string.dialog_option_discard, discardButtonClickListener);
-        dialog.setNegativeButton(R.string.dialog_option_keep_editing, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                if (dialog != null) {
-                    dialog.dismiss();
-                }
-            }
-        });
+        dialog.setMessage(R.string.dialog_unsaved_changes)
+                .setPositiveButton(R.string.dialog_option_discard, discardButtonClickListener)
+                .setNegativeButton(R.string.dialog_option_keep_editing, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        if (dialog != null) {
+                            dialog.dismiss();
+                        }
+                    }
+                });
+
         AlertDialog alertDialog = dialog.create();
         alertDialog.show();
     }
@@ -216,7 +222,7 @@ public class ProductDetailsActivity extends AppCompatActivity implements
     public boolean onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
         // no need to delete on new products
-        if (mCurrentProductUri == null) {
+        if (mCurrentProduct == null) {
             MenuItem menuItem = menu.findItem(R.id.action_delete_product);
             menuItem.setVisible(false);
         }
@@ -231,9 +237,11 @@ public class ProductDetailsActivity extends AppCompatActivity implements
                     finish();
                 }
                 return true;
+
             case R.id.action_delete_product:
                 showDeleteConfirmationDialog();
                 return true;
+
             case android.R.id.home:
                 if (!mProductEdited) {
                     NavUtils.navigateUpFromSameTask(ProductDetailsActivity.this);
@@ -255,10 +263,13 @@ public class ProductDetailsActivity extends AppCompatActivity implements
     private void orderMore() {
         String mailBody = "We need a new order of " + mNameEditText.getText().toString().trim()
                 + "\nPart No: " + mPartNoEditText.getText().toString().trim();
+
         Intent i = new Intent(Intent.ACTION_SENDTO);
+
         i.setData(Uri.parse("mailto:order@fictional_supplier.co.uk"));
         i.putExtra(Intent.EXTRA_SUBJECT, "Stock Order");
         i.putExtra(Intent.EXTRA_TEXT, mailBody);
+
         if (i.resolveActivity(getPackageManager()) != null) {
             startActivity(i);
         }
@@ -270,27 +281,34 @@ public class ProductDetailsActivity extends AppCompatActivity implements
                 partNoString = mPartNoEditText.getText().toString().trim(),
                 descriptionString = mDescriptionEditText.getText().toString().trim(),
                 stockString = mStockEditText.getText().toString();
-        if (mCurrentProductUri == null &&
+
+        if (mCurrentProduct == null &&
                 nameString.isEmpty() && priceString.isEmpty() && stockString.isEmpty() &&
                 partNoString.isEmpty() && descriptionString.isEmpty() &&
                 imageUri == null) {
             return true; // nothing changed, nothing to save
+
         } else if (nameString.isEmpty()) {
             mNameEditText.setError(getString(R.string.required_product_name));
             return false; // name required!
+
         } else if (partNoString.isEmpty()) {
             mPartNoEditText.setError(getString(R.string.required_product_part_no));
             return false; // part no required!
+
         } else if (priceString.isEmpty()) {
             mPriceEditText.setError(getString(R.string.required_product_price));
             return false; // price required!
+
         } else if (stockString.isEmpty()) {
             mStockEditText.setError(getString(R.string.required_product_stock));
             return false; // stock required!
+
         } else if (imageUri == null) {
             showToast(R.string.required_product_image);
             return false; // image required!
         }
+
         ContentValues values = new ContentValues();
         values.put(ProductEntry.COLUMN_PRODUCT_NAME, nameString);
         values.put(ProductEntry.COLUMN_PRODUCT_PART_NO, partNoString);
@@ -298,15 +316,17 @@ public class ProductDetailsActivity extends AppCompatActivity implements
         values.put(ProductEntry.COLUMN_PRODUCT_STOCK, stockString);
         values.put(ProductEntry.COLUMN_PRODUCT_DESCRIPTION, descriptionString);
         values.put(ProductEntry.COLUMN_PRODUCT_PICTURE, imageUri.toString());
-        if (mCurrentProductUri == null) {
+
+        if (mCurrentProduct == null) {
             Uri newUri = getContentResolver().insert(ProductEntry.PRODUCT_CONTENT_URI, values);
             if (newUri == null) {
                 showToast(R.string.error_saving);
             } else {
                 showToast(R.string.save_successful);
             }
+
         } else {
-            int rowsAffected = getContentResolver().update(mCurrentProductUri, values, null, null);
+            int rowsAffected = getContentResolver().update(mCurrentProduct, values, null, null);
             if (rowsAffected == 0) {
                 showToast(R.string.error_saving);
             } else {
@@ -334,14 +354,14 @@ public class ProductDetailsActivity extends AppCompatActivity implements
                         }
                     }
                 });
-        // Create and show the AlertDialog
+
         AlertDialog alertDialog = dialog.create();
         alertDialog.show();
     }
 
     private void deleteProduct() {
-        if (mCurrentProductUri != null) {
-            if (getContentResolver().delete(mCurrentProductUri, null, null) == 0) {
+        if (mCurrentProduct != null) {
+            if (getContentResolver().delete(mCurrentProduct, null, null) == 0) {
                 showToast(R.string.delete_failed);
             } else {
                 showToast(R.string.delete_success);
@@ -359,9 +379,10 @@ public class ProductDetailsActivity extends AppCompatActivity implements
                 ProductEntry.COLUMN_PRODUCT_STOCK,
                 ProductEntry.COLUMN_PRODUCT_PICTURE,
                 ProductEntry.COLUMN_PRODUCT_DESCRIPTION,
-                ProductEntry.COLUMN_PRODUCT_PART_NO};
+                ProductEntry.COLUMN_PRODUCT_PART_NO
+        };
         return new CursorLoader(this,
-                mCurrentProductUri,
+                mCurrentProduct,
                 projection,
                 null,
                 null,

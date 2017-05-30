@@ -14,8 +14,9 @@ import android.widget.Toast;
 import uk.co.mandilee.inventory.Contract.ProductEntry;
 
 
-public class ProductCursorAdapter extends CursorRecyclerAdapter<ProductCursorAdapter.ViewHolder> {
+public class ProductCursorAdapter extends CursorAdapter<ProductCursorAdapter.ViewHolder> {
 
+    // set up context, mostly for getString()
     private final ProductListActivity activityContext;
 
     public ProductCursorAdapter(ProductListActivity context, Cursor c) {
@@ -32,7 +33,6 @@ public class ProductCursorAdapter extends CursorRecyclerAdapter<ProductCursorAda
 
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, Cursor cursor) {
-
 
         final long productId = cursor.getLong(cursor.getColumnIndex(ProductEntry._ID));
 
@@ -51,15 +51,15 @@ public class ProductCursorAdapter extends CursorRecyclerAdapter<ProductCursorAda
         final int mStock = cursor.getInt(indexStock);
 
         viewHolder.nameTextView.setText(productName);
+        viewHolder.priceTextView.setText(activityContext.getString(R.string.currency_price, productPrice));
+        viewHolder.stockTextView.setText((mStock > 0)
+                ? activityContext.getString(R.string.num_in_stock, mStock)
+                : activityContext.getString(R.string.out_of_stock));
         viewHolder.productPicture.setImageURI(imageUri);
         viewHolder.productPicture.invalidate();
-        viewHolder.priceTextView.setText(activityContext.getString(R.string.currency_price, productPrice));
-        if (mStock > 0) {
-            viewHolder.stockTextView.setText(activityContext.getString(R.string.num_in_stock, mStock));
-        } else {
-            viewHolder.stockTextView.setText(activityContext.getString(R.string.out_of_stock));
-        }
 
+        // if in stock, remove one and update display
+        // if out of stock, show toast message saying so
         viewHolder.sold.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
