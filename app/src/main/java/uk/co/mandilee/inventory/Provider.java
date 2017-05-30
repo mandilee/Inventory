@@ -121,23 +121,23 @@ public class Provider extends ContentProvider {
     private void checkValue(String column, ContentValues values) {
         switch (column) {
             case ProductEntry.COLUMN_PRODUCT_NAME:
-                if (values.getAsString(column).equals(null))
+                if (values.getAsString(column).equals(""))
                     throw new IllegalArgumentException(mContext.getString(R.string.required_product_name));
 
             case ProductEntry.COLUMN_PRODUCT_PART_NO:
-                if (values.getAsString(column).equals(null))
+                if (values.getAsString(column).equals(""))
                     throw new IllegalArgumentException(mContext.getString(R.string.required_product_part_no));
 
             case ProductEntry.COLUMN_PRODUCT_PRICE:
-                if (values.getAsString(column).equals(null))
+                if (values.getAsString(column).equals(""))
                     throw new IllegalArgumentException(mContext.getString(R.string.required_product_price));
 
             case ProductEntry.COLUMN_PRODUCT_STOCK:
-                if (values.getAsString(column).equals(null))
+                if (values.getAsString(column).equals(""))
                     throw new IllegalArgumentException(mContext.getString(R.string.required_product_stock));
 
             case ProductEntry.COLUMN_PRODUCT_PICTURE:
-                if (values.getAsString(column).equals(null))
+                if (values.getAsString(column).equals(""))
                     throw new IllegalArgumentException(mContext.getString(R.string.required_product_image));
         }
     }
